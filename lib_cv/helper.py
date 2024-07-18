@@ -1,3 +1,5 @@
+import pathlib
+
 import cv2
 import glob
 
@@ -25,11 +27,11 @@ def flatten(xii):
     return [x for xi in xii for x in xi]
 
 
-def read_all_images(image_folder, extension='jpg'):
-    images_path = glob.glob(image_folder + '/*.' + extension)
+def read_all_images(image_folder: pathlib.Path, extension='jpg'):
+    images_path = image_folder.glob('*.' + extension)
     image_objects = []
     for f_name in images_path:
-        image_objects.append(cv2.imread(f_name))
+        image_objects.append(cv2.imread(str(f_name)))
     return image_objects
 
 

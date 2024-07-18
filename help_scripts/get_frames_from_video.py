@@ -2,6 +2,7 @@ import cv2
 import os
 from tkinter import Tk, filedialog
 
+
 def select_file(initial_dir):
     root = Tk()
     root.withdraw()  # Закрыть главное окно
@@ -10,11 +11,13 @@ def select_file(initial_dir):
         filetypes=[("Video files", "*.mp4 *.avi *.mov *.mkv")])
     return file_selected
 
+
 def select_folder(initial_dir):
     root = Tk()
     root.withdraw()  # Закрыть главное окно
     folder_selected = filedialog.askdirectory(initialdir=initial_dir)
     return folder_selected
+
 
 def play_video(video_path, save_folder):
     cap = cv2.VideoCapture(video_path)
@@ -53,6 +56,7 @@ def play_video(video_path, save_folder):
 
     cap.release()
     cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     initial_dir = "~/Видео/"  # Укажите путь к вашей начальной директории
