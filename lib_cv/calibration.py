@@ -6,6 +6,14 @@ import cv2 as cv
 
 def calibrate_camera_chessboard(images, pattern_size=(9, 6), square_size=1,
                                 criteria=(cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)):
+    """
+    Не рекомендовано к использованию. Используйте calibrate_with_charuco
+    :param images:
+    :param pattern_size:
+    :param square_size:
+    :param criteria:
+    :return:
+    """
     # Список для хранения 3D точек шахматной доски
     obj_points = []
 
@@ -48,7 +56,17 @@ def calibrate_camera_chessboard(images, pattern_size=(9, 6), square_size=1,
     return ret, K, D, r_vecs, t_vecs, roi, obj_points, img_points
 
 
-def calibrate_with_charuco(images, charuco_board: cv.aruco.CharucoBoard):
+def calibrate_with_charuco(images, charuco_board: cv.aruco.CharucoBoard, alpha=0):
+    """
+    Вычисление внутренних параметров камеры. Входные данные - фотографии ChArUco доски.
+    Благодаря особенностям ChArUco, ситуации, где паттерн виден частично, также подходят и будут корректно обработаны
+    :param images:
+    :param charuco_board:
+    :param alpha: Параметр в диапазоне от 0 (избавления от черных участков без информации)
+            до 1 (все пиксели исходного изображения сохранены, но есть черные участки).
+    :return:
+    """
+
     all_charuco_corners = []
     all_charuco_ids = []
     all_object_points = []
@@ -70,6 +88,35 @@ def calibrate_with_charuco(images, charuco_board: cv.aruco.CharucoBoard):
 
     h, w = gray.shape
 
-    ret, K, D, r_vecs, t_vecs = cv.calibrateCamera(all_object_points, all_image_points, (w, h), None, None)
+    ret, camera_matrix, distortion_coefficients, r_vecs, t_vecs = cv.calibrateCamera(all_object_points,
+                                                                                     all_image_points,
+                                                                                     (w, h),
+                                                                                     None,
+                                                                                     None)
 
-    return ret, K, D, r_vecs, t_vecs, all_object_points, all_image_points
+    camera_matrix, roi = cv.getOptimalNewCameraMatrix(camera_matrix, distortion_coefficients, (w, h), alpha, (w, h))
+
+    return ret, camera_matrix, distortion_coefficients, r_vecs, t_vecs, all_object_points, all_image_points
+
+
+def save_single_cam_params(file_name, camera_matrix, distortion_coefficients):
+    """
+    Сохранить результат калибровки (внутренние параметры камеры) в файл в формате numpy-архив (.npz)
+    :param file_name:
+    :param camera_matrix:
+    :param distortion_coefficients:
+    :return:
+    """
+
+    np.savez(f'{file_name}.npz', camera_matrix=camera_matrix, distortion_coefficients=distortion_coefficients)
+
+
+def load_single_cam_params(file_name) -> tuple[cv.Mat | np.ndarray, cv.Mat | np.ndarray]:
+    """
+    Загружает из numpy-архива (.npz) внутренние параметры камеры.
+    :param file_name:
+    :return:
+    """
+
+    loaded = np.load(file_name)
+    return loaded['camera_matrix'], loaded['distortion_coefficients']
