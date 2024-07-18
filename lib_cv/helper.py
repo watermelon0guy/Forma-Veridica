@@ -58,3 +58,14 @@ def set_camera_resolution(cam, x, y):
 
 def remove_inf_vectors(arr):
     return arr[~np.any(np.isinf(arr), axis=1)]
+
+
+def image_size(image):
+    """
+    Return image size in OpenCV's format.\n
+    Возвращает размеры изображения в формате OpenCV
+    :param image:
+    :return:
+    """
+    h, w, _ = image.shape
+    return (w, h)
