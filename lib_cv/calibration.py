@@ -94,24 +94,25 @@ def calibrate_with_charuco(images, charuco_board: cv.aruco.CharucoBoard, alpha=0
                                                                                      None,
                                                                                      None)
 
-    camera_matrix, roi = cv.getOptimalNewCameraMatrix(camera_matrix, distortion_coefficients, (w, h), alpha, (w, h))
+    camera_matrix_new, roi = cv.getOptimalNewCameraMatrix(camera_matrix, distortion_coefficients, (w, h), alpha, (w, h))
 
-    return ret, camera_matrix, distortion_coefficients, r_vecs, t_vecs, all_object_points, all_image_points
+    return ret, camera_matrix, camera_matrix_new, distortion_coefficients, r_vecs, t_vecs, all_object_points, all_image_points
 
 
-def save_single_cam_params(file_name, camera_matrix, distortion_coefficients):
+def save_single_cam_params(file_name, camera_matrix, camera_matrix_optimal, distortion_coefficients):
     """
     Сохранить результат калибровки (внутренние параметры камеры) в файл в формате numpy-архив (.npz)
     :param file_name:
     :param camera_matrix:
+    :param camera_matrix_optimal:
     :param distortion_coefficients:
     :return:
     """
 
-    np.savez(f'{file_name}.npz', camera_matrix=camera_matrix, distortion_coefficients=distortion_coefficients)
+    np.savez(f'{file_name}.npz', camera_matrix=camera_matrix, camera_matrix_optimal=camera_matrix_optimal, distortion_coefficients=distortion_coefficients)
 
 
-def load_single_cam_params(file_name) -> tuple[cv.Mat | np.ndarray, cv.Mat | np.ndarray]:
+def load_single_cam_params(file_name) -> tuple[cv.Mat | np.ndarray, cv.Mat | np.ndarray, cv.Mat | np.ndarray]:
     """
     Загружает из numpy-архива (.npz) внутренние параметры камеры.
     :param file_name:
@@ -119,4 +120,4 @@ def load_single_cam_params(file_name) -> tuple[cv.Mat | np.ndarray, cv.Mat | np.
     """
 
     loaded = np.load(file_name)
-    return loaded['camera_matrix'], loaded['distortion_coefficients']
+    return loaded['camera_matrix'], loaded['camera_matrix_optimal'], loaded['distortion_coefficients']

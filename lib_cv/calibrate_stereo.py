@@ -10,8 +10,8 @@ def calibrate_different_stereo_cameras(cam_1_images, cam_2_images, board: cv.aru
     default_image_size_2 = cam_2_images[0].shape[1::-1]
     image_size = default_image_size_1
 
-    ret_1, K_1, D_1, _, _, obj_points_1, img_points_1 = calibration.calibrate_with_charuco(cam_1_images, board)
-    ret_2, K_2, D_2, _, _, obj_points_2, img_points_2 = calibration.calibrate_with_charuco(cam_2_images, board)
+    ret_1, K_1, K_1_new, D_1, _, _, obj_points_1, img_points_1 = calibration.calibrate_with_charuco(cam_1_images, board)
+    ret_2, K_2, K_2_new, D_2, _, _, obj_points_2, img_points_2 = calibration.calibrate_with_charuco(cam_2_images, board)
 
     flags = 0
     flags |= cv.CALIB_FIX_INTRINSIC

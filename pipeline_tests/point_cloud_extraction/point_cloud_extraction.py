@@ -2,15 +2,22 @@ import cv2 as cv
 from lib_cv import pose, calibration, helper, correspondence, reconstruction
 from pathlib import Path
 
-camera_mat_1, dist_coeff_1 = calibration.load_single_cam_params(
+camera_mat_1, camera_mat_1_optimal, dist_coeff_1 = calibration.load_single_cam_params(
     Path('/home/watermelon0guy/Видео/new_exp/phone_1/intrinsic.npz'))
-camera_mat_2, dist_coeff_2 = calibration.load_single_cam_params(
+camera_mat_2, camera_mat_2_optimal, dist_coeff_2 = calibration.load_single_cam_params(
     Path('/home/watermelon0guy/Видео/new_exp/phone_2/intrinsic.npz'))
 
 image_1 = cv.imread("/home/watermelon0guy/Видео/new_exp/phone_1/synced_pics/frame_6736.png")
 image_2 = cv.imread("/home/watermelon0guy/Видео/new_exp/phone_2/synced_pics/frame_6737.png")
 
 image_size = helper.image_size(image_1)
+
+image_1, image_2 = helper.undistort_2_images(image_1, image_2,
+                                             camera_mat_1, camera_mat_1_optimal, dist_coeff_1,
+                                             camera_mat_2, camera_mat_2_optimal, dist_coeff_2)
+
+camera_mat_1 = camera_mat_1_optimal
+camera_mat_2 = camera_mat_2_optimal
 
 R, T, E, F = pose.load_extrinsic_params(Path("/home/watermelon0guy/Видео/new_exp/extrinsic.npz"))
 

@@ -69,3 +69,11 @@ def image_size(image):
     """
     h, w, _ = image.shape
     return (w, h)
+
+
+def undistort_2_images(image_1, image_2,
+                       camera_matrix_1, camera_matrix_1_optimal, distortion_coefficients_1,
+                       camera_matrix_2, camera_matrix_2_optimal, distortion_coefficients_2):
+    undistort_1 = cv2.undistort(image_1, camera_matrix_1, distortion_coefficients_1, None, camera_matrix_1_optimal)
+    undistort_2 = cv2.undistort(image_2, camera_matrix_2, distortion_coefficients_2, None, camera_matrix_2_optimal)
+    return undistort_1, undistort_2
