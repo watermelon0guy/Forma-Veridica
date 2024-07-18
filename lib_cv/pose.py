@@ -26,9 +26,9 @@ def recover_pose_stereo_calib(object_points_1, image_points_1,
     :return:
     """
     ret_stereo, camera_matrix_1, distortion_1, camera_matrix_2, distortion_2, R, T, E, F = cv.stereoCalibrate(
-        [object_points_1],
-        [image_points_1],
-        [image_points_2],
+        object_points_1,
+        image_points_1,
+        image_points_2,
         camera_matrix_1,
         distortion_1,
         camera_matrix_2,
@@ -59,7 +59,7 @@ def save_extrinsic_params(file_name, rotation, transformation, essential, fundam
 def load_extrinsic_params(file_name) -> tuple[
     cv.Mat | np.ndarray, cv.Mat | np.ndarray, cv.Mat | np.ndarray, cv.Mat | np.ndarray]:
     """
-    Загружает из numpy-архива (.npz) отн параметры камеры.
+    Загружает из numpy-архива (.npz) внешние параметры камеры.
     :param file_name:
     :return:
     """

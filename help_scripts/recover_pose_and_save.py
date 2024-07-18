@@ -19,8 +19,7 @@ charuco_board = cv.aruco.CharucoBoard((5, 5), 10.0, 7.0, cv.aruco.getPredefinedD
 object_points_1, image_points_1 = markers.get_charuco(charuco_board, image_1)
 object_points_2, image_points_2 = markers.get_charuco(charuco_board, image_2)
 
-R, T, E, F = pose.recover_pose_stereo_calib(object_points_1, image_points_1, object_points_2, image_points_2,
+R, T, E, F = pose.recover_pose_stereo_calib([object_points_1], [image_points_1], [object_points_2], [image_points_2],
                                             camera_mat_1, dist_coeff_1, camera_mat_2, dist_coeff_2, image_size)
 
 pose.save_extrinsic_params(Path("/home/watermelon0guy/Видео/new_exp/extrinsic"), R, T, E, F)
-

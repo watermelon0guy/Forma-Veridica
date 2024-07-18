@@ -1,4 +1,7 @@
 import cv2
+import numpy as np
+
+from lib_cv import helper
 
 
 def bf_match(des1, des2, distance=50):
@@ -77,3 +80,41 @@ def sift(img_1, img_2):
     kp_1, des_1 = sift.detectAndCompute(img_1, None)
     kp_2, des_2 = sift.detectAndCompute(img_2, None)
     return kp_1, kp_2, des_1, des_2
+
+
+def match_points_sift_flann(image_1, image_2, F, ratio=0.65):
+    kp_1, kp_2, des_1, des_2 = sift(image_1, image_2)
+    good_matches = flann_knn_match(des_1, des_2, ratio=ratio)
+
+    good_matches = helper.flatten(good_matches)
+
+    points_1 = np.float32([kp_1[match.queryIdx].pt for match in good_matches])
+    points_2 = np.float32([kp_2[match.trainIdx].pt for match in good_matches])
+
+    error_sum = 0
+    inlier_matches = []
+    for i in range(len(points_1)):
+        pt_1 = np.append(points_1[i], 1)
+        pt_2 = np.append(points_2[i], 1)
+        error = np.abs(np.dot(pt_2.T, np.dot(F, pt_1)))
+        error_sum += error
+        if error < 0.5:  # Порог ошибки можно настроить
+            inlier_matches.append(good_matches[i])
+
+    good_matches = inlier_matches
+
+    points_1 = np.float32([kp_1[match.queryIdx].pt for match in good_matches])
+    points_2 = np.float32([kp_2[match.trainIdx].pt for match in good_matches])
+
+    return points_1, points_2
+
+
+def get_colors_from_points(image, points):
+    colors = []
+    for point in points:
+        x, y = point
+        color = image[int(y), int(x), :3]
+        colors.append(color)
+
+    colors = np.array(colors)
+    return colors
