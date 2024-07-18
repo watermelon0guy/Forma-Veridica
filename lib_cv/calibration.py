@@ -56,7 +56,7 @@ def calibrate_camera_chessboard(images, pattern_size=(9, 6), square_size=1,
     return ret, K, D, r_vecs, t_vecs, roi, obj_points, img_points
 
 
-def calibrate_with_charuco(images, charuco_board: cv.aruco.CharucoBoard, alpha=0):
+def calibrate_with_charuco(images, charuco_board: cv.aruco.CharucoBoard):
     """
     Вычисление внутренних параметров камеры. Входные данные - фотографии ChArUco доски.
     Благодаря особенностям ChArUco, ситуации, где паттерн виден частично, также подходят и будут корректно обработаны
@@ -94,12 +94,10 @@ def calibrate_with_charuco(images, charuco_board: cv.aruco.CharucoBoard, alpha=0
                                                                                      None,
                                                                                      None)
 
-    camera_matrix_new, roi = cv.getOptimalNewCameraMatrix(camera_matrix, distortion_coefficients, (w, h), alpha, (w, h))
-
-    return ret, camera_matrix, camera_matrix_new, distortion_coefficients, r_vecs, t_vecs, all_object_points, all_image_points
+    return ret, camera_matrix, distortion_coefficients, r_vecs, t_vecs, all_object_points, all_image_points
 
 
-def save_single_cam_params(file_name, camera_matrix, camera_matrix_optimal, distortion_coefficients):
+def save_single_cam_params(file_name, camera_matrix, distortion_coefficients):
     """
     Сохранить результат калибровки (внутренние параметры камеры) в файл в формате numpy-архив (.npz)
     :param file_name:
@@ -109,10 +107,10 @@ def save_single_cam_params(file_name, camera_matrix, camera_matrix_optimal, dist
     :return:
     """
 
-    np.savez(f'{file_name}.npz', camera_matrix=camera_matrix, camera_matrix_optimal=camera_matrix_optimal, distortion_coefficients=distortion_coefficients)
+    np.savez(f'{file_name}.npz', camera_matrix=camera_matrix, distortion_coefficients=distortion_coefficients)
 
 
-def load_single_cam_params(file_name) -> tuple[cv.Mat | np.ndarray, cv.Mat | np.ndarray, cv.Mat | np.ndarray]:
+def load_single_cam_params(file_name) -> tuple[cv.Mat | np.ndarray, cv.Mat | np.ndarray]:
     """
     Загружает из numpy-архива (.npz) внутренние параметры камеры.
     :param file_name:
@@ -120,4 +118,4 @@ def load_single_cam_params(file_name) -> tuple[cv.Mat | np.ndarray, cv.Mat | np.
     """
 
     loaded = np.load(file_name)
-    return loaded['camera_matrix'], loaded['camera_matrix_optimal'], loaded['distortion_coefficients']
+    return loaded['camera_matrix'], loaded['distortion_coefficients']
